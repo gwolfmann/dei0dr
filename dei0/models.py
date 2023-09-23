@@ -19,8 +19,14 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=255)
     types = models.ManyToManyField('AlimentType', default=AlimentType.get_default_other_type)
     
+class Recipe(models.Model):
+    name = models.CharField(max_length=255)
+    #ingredients = models.ManyToManyField('IngredientInRecipe')
+    preparation = models.TextField()
+
 class IngredientInRecipe(models.Model):
-    ingredient = models.ForeignKey('Ingredient', on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, related_name='ingredients_in_recipe', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=3)
     measure_unit_choices = [
         ('kg', 'Kilogram'),
@@ -29,8 +35,3 @@ class IngredientInRecipe(models.Model):
         ('unit', 'Unit'),
     ]
     measure_unit = models.CharField(max_length=10, choices=measure_unit_choices)
-
-class Recipe(models.Model):
-    name = models.CharField(max_length=255)
-    ingredients = models.ManyToManyField('IngredientInRecipe')
-    preparation = models.TextField()

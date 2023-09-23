@@ -49,11 +49,25 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientInRecipe
-        fields = '__all__'
+        fields = ('ingredient','quantity','measure_unit')
 
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientInRecipeSerializer(many=True)
 
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = ('name','preparation','ingredients')
+
+    def create(self, validated_data):
+        print(validated_data)
+        ingredients_data = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        for ingredient_data in ingredients_data:
+            IngredientInRecipe.objects.create(recipe_id=recipe.id, **ingredient_data)
+        return recipe
+
+    def to_representation(self, instance):
+        # Override the to_representation method to include additional information
+        data = super().to_representation(instance)
+        data['ingredients'] = IngredientInRecipeSerializer(instance.types.all(), many=True).data
+        return data
