@@ -19,6 +19,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 #    serializer_class = RecipeSerializer
     def get_serializer_class(self):
         print(self.action)
-        if self.action in ['create']:
+        if self.action in ['create','update','partial_update']:
             return RecipeWriteSerializer
         return RecipeReadSerializer
