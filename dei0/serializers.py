@@ -51,8 +51,9 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         model = IngredientInRecipe
         fields = ('ingredient','quantity','measure_unit')
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeWriteSerializer(serializers.ModelSerializer):
     ingredients = IngredientInRecipeSerializer(many=True)
+#    ingredients = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -66,8 +67,52 @@ class RecipeSerializer(serializers.ModelSerializer):
             IngredientInRecipe.objects.create(recipe_id=recipe.id, **ingredient_data)
         return recipe
 
-    def to_representation(self, instance):
-        # Override the to_representation method to include additional information
-        data = super().to_representation(instance)
-        data['ingredients'] = IngredientInRecipeSerializer(instance.types.all(), many=True).data
-        return data
+    # def to_representation(self, instance):
+    #    # Override the to_representation method to include additional information
+    #    data = super().to_representation(instance)
+    #    data['ingredients'] = IngredientInRecipeSerializer(instance.ingredient.all(), many=True).data
+    #    return data
+    
+#    def get_ingredients(self, instance):
+#        ingredients_in_recipe = IngredientInRecipe.objects.filter(recipe=instance)
+#        return IngredientInRecipeSerializer(ingredients_in_recipe, many=True).data
+
+    # def to_representation(self, instance):
+    #     ingredients_in_recipe = serializers.PrimaryKeyRelatedField(queryset=IngredientInRecipe.objects.all(), many=True, required=True)
+    #     data = super().to_representation(instance)
+    #     ingredients_in_recipe = ingredients_in_recipe.all()
+    #     data['ingredients'] = IngredientInRecipeSerializer(ingredients_in_recipe, many=True).data
+    #     return data
+
+class RecipeReadSerializer(serializers.ModelSerializer):
+#    ingredients = IngredientInRecipeSerializer(many=True)
+    ingredients = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recipe
+        fields = ('name','preparation','ingredients')
+
+#    def create(self, validated_data):
+#        print(validated_data)
+#        ingredients_data = validated_data.pop('ingredients')
+#        recipe = Recipe.objects.create(**validated_data)
+#        for ingredient_data in ingredients_data:
+#            IngredientInRecipe.objects.create(recipe_id=recipe.id, **ingredient_data)
+#        return recipe
+
+    # def to_representation(self, instance):
+    #    # Override the to_representation method to include additional information
+    #    data = super().to_representation(instance)
+    #    data['ingredients'] = IngredientInRecipeSerializer(instance.ingredient.all(), many=True).data
+    #    return data
+    
+    def get_ingredients(self, instance):
+       ingredients_in_recipe = IngredientInRecipe.objects.filter(recipe=instance)
+       return IngredientInRecipeSerializer(ingredients_in_recipe, many=True).data
+
+    # def to_representation(self, instance):
+    #     ingredients_in_recipe = serializers.PrimaryKeyRelatedField(queryset=IngredientInRecipe.objects.all(), many=True, required=True)
+    #     data = super().to_representation(instance)
+    #     ingredients_in_recipe = ingredients_in_recipe.all()
+    #     data['ingredients'] = IngredientInRecipeSerializer(ingredients_in_recipe, many=True).data
+    #     return data    

@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import AlimentType, Ingredient, IngredientInRecipe, Recipe
-from .serializers import AlimentTypeSerializer, IngredientSerializer, IngredientInRecipeSerializer, RecipeSerializer
+from .serializers import AlimentTypeSerializer, IngredientSerializer, IngredientInRecipeSerializer, RecipeReadSerializer, RecipeWriteSerializer
 
 class AlimentTypeViewSet(viewsets.ModelViewSet):
     queryset = AlimentType.objects.all().order_by('id')
@@ -15,5 +15,10 @@ class IngredientInRecipeViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientInRecipeSerializer
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all().order_by('id')
-    serializer_class = RecipeSerializer
+    queryset = Recipe.objects.all().order_by('id')    
+#    serializer_class = RecipeSerializer
+    def get_serializer_class(self):
+        print(self.action)
+        if self.action in ['create']:
+            return RecipeWriteSerializer
+        return RecipeReadSerializer
